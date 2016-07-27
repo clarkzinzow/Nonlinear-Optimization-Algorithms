@@ -52,8 +52,8 @@ for i = 1:maxit
     %  Check check for termination condition: norm of gradient less than toler.
     if norm(xc.g) < toler
         inform.status = 1;  % Indicates success.
-        inform.iter = i;  % Set number of iterations.
-        inform.cgiter = cgiter;  % Set number of conjugate iterations.
+        inform.iter = i;  % Number of iterations.
+        inform.cgiter = cgiter;  % Number of conjugate iterations.
         x.p = xc.p;
         x.f = xc.f;
         x.g = xc.g;
@@ -133,11 +133,11 @@ return;  % Return inform and final point x
 end
 
 function p = boundary(p, q, del)
-%  boundary function finds the boundary point.
+%  Finds the boundary point.
 a = norm(q)^2;
 b = 2*p'*q;
-c = norm(p)^2-del^2;
-alpha = (-b+sqrt(b^2-4*a*c)) / (2*a);
-p = p+alpha * q;
+c = norm(p)^2 - del^2;
+alpha = (-b + sqrt(b^2 - 4*a*c)) / (2*a);
+p = p + alpha * q;
 return;
 end

@@ -47,10 +47,10 @@ for i = 1:maxit
     xc.g = feval(fun, xc.p, 2);  % Compute gradient at current point.
     xc.h = sparse(feval(fun, xc.p, 4));  % Compute Hessian at current point.
     
-    %  Check if norm of gradient at current point is below toler.
+    %  Check check for termination condition: norm of gradient less than toler.
     if norm(xc.g) < toler
         inform.status = 1;  % Indicates success.
-        inform.iter = i;  % Set number of iterations.
+        inform.iter = i;  % Number of iterations.
         x.p = xc.p;
         x.f = xc.f;
         x.g = xc.g;
@@ -62,13 +62,13 @@ for i = 1:maxit
     
     %  If g'Hg <= 0 ...
     if xc.g'*xc.h*xc.g <= 0
-        tao = 1;  % Set tao = 1.
+        tau = 1;  % Set tao = 1.
     %  Otherwise (g'Hg > 0) ...
     else
-        %  tao = min(||g||^3 / (del * g'Hg),1)
-        tao = min(norm(xc.g)^3 / (del*xc.g'*xc.h*xc.g),1);
+        %  tau = min(||g||^3 / (del * g'Hg),1)
+        tau = min(norm(xc.g)^3 / (del*xc.g'*xc.h*xc.g),1);
     end
-    pU = -tao * del * xc.g / norm(xc.g);
+    pU = -tau * del * xc.g / norm(xc.g);
     
     %  Calculate dogleg point, p.
     
@@ -155,12 +155,12 @@ x.h = sparse(feval(fun,x.p,4));
 return;  % Return inform and final point x
 end
 
-function p = boundary(p, q, Del)
-%  boundary function finds the boundary point.
+function p = boundary(p, q, del)
+%  Finds the boundary point.
 a = norm(q)^2;
 b = 2*p'*q;
-c = norm(p)^2-Del^2;
-alpha = (-b+sqrt(b^2-4*a*c)) / (2*a);
-p = p+alpha * q;
+c = norm(p)^2 - del^2;
+alpha = (-b + sqrt(b^2 - 4*a*c)) / (2*a);
+p = p + alpha * q;
 return;
 end

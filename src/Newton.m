@@ -48,11 +48,11 @@ for i = 1:max_iter
     
     % Check for the termination condition: norm of gradient less than toler.
     if norm(xc.g) < toler
-        inform.status = 1;
-        inform.iter = i;
+        inform.status = 1;  % Indicates success.
+        inform.iter = i;  % Number of iterations.
         x.p = xc.p;
-        x.f = feval(func, xc.p, 1);
-        x.g = feval(func, xc.p, 2);
+        x.f = xc.f;
+        x.g = xc.g;
         return;
     end
     
