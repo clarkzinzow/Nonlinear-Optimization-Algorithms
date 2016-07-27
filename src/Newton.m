@@ -31,20 +31,27 @@ function [inform, x] = Newton(func, x, nparams)
 %    x      - the solution structure, with the solution point along with
 %             function and gradient evaluations thereof.
 
-global numf numg numH
+%  Number of function, gradient, and Hessian evaluations.
+global numf numg numh
 numf = 0;
 numg = 0;
-numH = 0;
-max_iter = nparams.maxit;
-toler = nparams.toler;
-xc.p = x.p;
+numh = 0;
+
+%  Populate local caching of nparams parameters.
+toler = nparams.toler;  % Set gradient tolerance.
+maxit = nparams.maxit;  % Set maximum number of allowed iterations.
+method = nparams.method;  % Set method.
+xc.p = x.p;  % Set the current point to the initial point, x.p.
+
+%  Initialize parameter structure for StepSize function call.
 params = struct('ftol', 1e-4, 'gtol', 0.9, 'xtol', 1e-6, 'stpmin', 0, ...
                 'stpmax', 1e20, 'maxfev', 10000);
 
-for i = 1:max_iter
-    xc.f = feval(func, xc.p, 1);  % Compute function at current point.
-    xc.g = feval(func, xc.p, 2);  % Compute gradient at current point.
-    xc.h = sparse(feval(func, xc.p, 4));  % Compute sprase Hessian.
+for i = 1:maxit
+    %  Compute function, gradient, and Hessian at current point.
+    xc.f = feval(func, xc.p, 1);
+    xc.g = feval(func, xc.p, 2);
+    xc.h = sparse(feval(func, xc.p, 4));
     
     % Check for the termination condition: norm of gradient less than toler.
     if norm(xc.g) < toler
@@ -57,7 +64,7 @@ for i = 1:max_iter
     end
     
     % Use the direct method.
-    if strcmp(nparams.method, 'direct')
+    if strcmp(method, 'direct')
         s = -xc.h \ xc.g;  % Search direction.
         
         % If this is not a descent direction...
@@ -72,7 +79,7 @@ for i = 1:max_iter
             s = -D*xc.g;  % New search direction that is a descent direction.
         end
     else
-        % Hessian modification: Cholesky with added multiple of identity.
+        % Hessian modification method: Cholesky with added multiple of identity.
         [R, ~] = CholeskyMultIdentity(xc.h);
         s = -R \ (R'\xc.g);  % Search direction.
     end
@@ -83,8 +90,8 @@ for i = 1:max_iter
     xc.p = xc.p + alfa * s;
 end
 %  If reached, method failed.
-inform.status = 0;
-inform.iter = max_iter;
+inform.status = 0;  % Update status to failure indicator, 0.
+inform.iter = maxit;  % Number of iterations = i = maxit at this point.
 x.p = xc.p;
 x.f = xc.f;
 x.g = xc.g;

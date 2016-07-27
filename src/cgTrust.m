@@ -26,28 +26,30 @@ function [inform, x] = cgTrust(fun, x, nparams)
 %    x      - the solution structure, with the solution point along with
 %             function, gradient, and Hessian evaluations thereof.
 
+%  Number of function, gradient, and Hessian evaluations, and number of Cholesky
+%  factorizations.
 global numf numg numh numFact
+numf = 0;
+numg = 0;
+numh = 0;
+numFact = 0;
 
-numf = 0;  % Number of function evaluations.
-numg = 0;  % Number of gradient evaluations.
-numh = 0;  % Number of Hessian evaluations.
-numFact = 0;  % Number of Cholesky factorizations.
-
-%  Populate local versions of nparams parameters.
+%  Populate local caching of nparams parameters.
 toler = nparams.toler;  % Set gradient tolerance.
 maxit = nparams.maxit;  % Set maximum number of allowed iterations.
 initdel = nparams.initdel;  % Set initial delta value.
 maxdel = nparams.maxdel;  % Set maximum delta value.
-eta = nparams.eta;  % Set eta.
+eta = nparams.eta;  % Set eta value.
 
 del = initdel;  % Set delta value to initial delta value.
 xc.p = x.p;  % Set the current point to the initial point, x.p.
 cgiter = 0;  % Number of conjugate iterations.
 
 for i = 1:maxit
-    xc.f = feval(fun, xc.p, 1);  % Compute function at current point.
-    xc.g = feval(fun, xc.p, 2);  % Compute gradient at current point.
-    xc.h = sparse(feval(fun, xc.p, 4));  % Compute Hessian at current point.
+    %  Compute function, gradient, and Hessian at current point.
+    xc.f = feval(fun, xc.p, 1);
+    xc.g = feval(fun, xc.p, 2);
+    xc.h = sparse(feval(fun, xc.p, 4));
     
     %  Check check for termination condition: norm of gradient less than toler.
     if norm(xc.g) < toler
@@ -106,29 +108,27 @@ for i = 1:maxit
     rho = (xc.f - feval(fun,xc.p + p,1))/(-xc.g'*p - 0.5*p'*xc.h*p);
     
     %  Update the trust region; i.e., update del and the current point.
-
     if rho < 0.25
-        del = del/4;
+        del = del / 4;
     else
-        %  Note that radius only increases if ||p|| reaches the TR boundary.
+        %  Note that radius only increases if norm of p reaches the trust
+        %  region boundary.
         if rho > 0.75 && norm(p) == del
             del = min(2*del, maxdel);
         end
-        % else del_{k+1} = del_k; i.e., del does not change.
     end
     if rho > eta
         xc.p = xc.p + p;
     end
-    % else p_{k+1} = p_k; i.e., the current point does not change.
 end
 %  If reached, method failed.
 inform.status = 0;  % Update status to failure indicator, 0.
-inform.iter = maxit;  % Number of iterations i = maxit at this point.
+inform.iter = maxit;  % Number of iterations = i = maxit at this point.
 inform.cgiter = cgiter;  % Number of conjugate iterations.
 x.p = xc.p;
-x.f = xc.f;
+x.f = feval(fun, x.p, 1);
 x.g = feval(fun, x.p, 2);
-x.h = sparse(feval(fun,x.p,4));
+x.h = sparse(feval(fun, x.p, 4));
 return;  % Return inform and final point x
 end
 
