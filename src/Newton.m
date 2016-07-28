@@ -12,7 +12,7 @@ function [inform, x] = Newton(func, x, nparams)
 %  direction.)
 %
 %  Input:
-%    fun      - a pointer to a function
+%    func      - a pointer to a function
 %    x        - the following structure:
 %               * x.p - the starting point values
 %               * x.f - the function value of x.p
@@ -93,8 +93,8 @@ end
 inform.status = 0;  % Update status to failure indicator, 0.
 inform.iter = maxit;  % Number of iterations = i = maxit at this point.
 x.p = xc.p;
-x.f = xc.f;
-x.g = xc.g;
+x.f = feval(func, x.p, 1);
+x.g = feval(func, x.p, 2);
 return;  % Return inform and final point.
 end
 

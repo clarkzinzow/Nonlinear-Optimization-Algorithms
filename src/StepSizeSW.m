@@ -1,8 +1,7 @@
 function [alpha,xp] = StepSizeSW(f,x,d,alpha,params)
-% function [alpha,xp] = StepSizeSW(f,x,d,alpha,params)
-% Line search algorithm satisfying strong Wolfe conditions
-% Algorithms 3.5 on pages 60-61 in Nocedal and Wright
-% Requires x.p, x.f and x.g to be initialized
+% Line search algorithm satisfying strong Wolfe conditions.
+% Algorithms 3.5 on pages 60-61 in Nocedal and Wright.
+% Requires x.p, x.f and x.g to be initialized.
 
 alpha0 = params.stpmin;
 c1 = params.ftol;

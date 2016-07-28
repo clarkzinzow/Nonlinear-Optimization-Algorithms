@@ -1,6 +1,6 @@
-function [inform, x] = cgTrust(fun, x, nparams)
-%  cgTrust implements the Steihaug-Toint conjugate gradient trust region method
-%  for finding an approximate solution to the subproblem:
+function [inform, x] = cgTrust(fun, x, cgtparams)
+%  Implements the Steihaug-Toint conjugate gradient trust region method for
+%  finding an approximate solution to the subproblem:
 %
 %        min m(p) = f + g'p + 1/2 * p' B p        s.t. ||p|| <= Del
 %
@@ -12,8 +12,8 @@ function [inform, x] = cgTrust(fun, x, nparams)
 %               * x.g - the gradient value of x.p
 %               * x.h - the Hessian value of x.p
 %               with only x.p guaranteed to be set.
-%    nparams - the following structure, as an example:
-%         nparams = struct('maxit',1000,'toler',1.0e-4,'initdel',1,
+%    cgtparams - the following structure, as an example:
+%         cgtparams = struct('maxit',1000,'toler',1.0e-4,'initdel',1,
 %                          'maxdel',100,'eta',0.1);
 %
 %  Output:
@@ -34,12 +34,12 @@ numg = 0;
 numh = 0;
 numFact = 0;
 
-%  Populate local caching of nparams parameters.
-toler = nparams.toler;  % Set gradient tolerance.
-maxit = nparams.maxit;  % Set maximum number of allowed iterations.
-initdel = nparams.initdel;  % Set initial delta value.
-maxdel = nparams.maxdel;  % Set maximum delta value.
-eta = nparams.eta;  % Set eta value.
+%  Populate local caching of cgtparams parameters.
+toler = cgtparams.toler;  % Set gradient tolerance.
+maxit = cgtparams.maxit;  % Set maximum number of allowed iterations.
+initdel = cgtparams.initdel;  % Set initial delta value.
+maxdel = cgtparams.maxdel;  % Set maximum delta value.
+eta = cgtparams.eta;  % Set eta value.
 
 del = initdel;  % Set delta value to initial delta value.
 xc.p = x.p;  % Set the current point to the initial point, x.p.
@@ -67,8 +67,8 @@ for i = 1:maxit
     
     g = xc.g;  %  Set residual to gradient.
     initGradToler = toler * norm(g);  % Set residual norm-based toler.
-    d = -g;
-    k = 0;
+    d = -g;  % Current search direction.
+    k = 0;  % Iteration index.
     z = zeros(size(xc.h, 1), 1);
     while 1
         %  If current search direction, d, is a direction of nonpositive
@@ -93,16 +93,14 @@ for i = 1:maxit
             p = z;
             break;
         end
-        %  Update beta.
-        beta = norm(gN)^2 / norm(g)^2;
-        %  Update search direction.
-        d = -gN + beta * d;
-        %  Update gradient.
-        g = gN;
-        %  Update iteration index.
-        k = k + 1;      
+        
+        %  Parameter updates.
+        beta = norm(gN)^2 / norm(g)^2;  % Update beta.
+        d = -gN + beta * d;  % Update search direction.
+        g = gN;  % Update gradient.
+        k = k + 1;  % Update iteration index.    
     end
-    cgiter = cgiter + k;
+    cgiter = cgiter + k;  % Update number of conjugate gradient iterations.
     
     %  Compute the reduction ratio.
     rho = (xc.f - feval(fun,xc.p + p,1))/(-xc.g'*p - 0.5*p'*xc.h*p);

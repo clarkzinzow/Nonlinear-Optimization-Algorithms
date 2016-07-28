@@ -1,5 +1,5 @@
-function [inform,x] = DogLeg(fun,x,nparams)
-%  DogLeg implements the dogleg method for finding a solution to the subproblem
+function [inform, x] = DogLeg(fun, x, dlparams)
+%  Implements the dogleg method for finding a solution to the subproblem
 %
 %       min m(p) = f + g'p + 1/2 * p' B p        s.t. ||p|| <= Del
 %
@@ -11,8 +11,8 @@ function [inform,x] = DogLeg(fun,x,nparams)
 %               * x.g - the gradient value of x.p
 %               * x.h - the Hessian value of x.p
 %               with only x.p guaranteed to be set.
-%    nparams - the following structure, as an example:
-%         nparams = struct('maxit',1000,'toler',1.0e-4,'initdel',1,
+%    dlparams - the following structure, as an example:
+%         dlparams = struct('maxit',1000,'toler',1.0e-4,'initdel',1,
 %                           'maxdel',100,'eta',0.1,'method','chol',
 %                           'hessian','exact','fail','cauchy');
 %
@@ -33,12 +33,12 @@ numg = 0;
 numh = 0;
 numFact = 0;
 
-%  Populate local caching of nparams parameters.
-toler = nparams.toler;  % Set gradient tolerance.
-maxit = nparams.maxit;  % Set maximum number of allowed iterations.
-initdel = nparams.initdel;  % Set initial delta value.
-maxdel = nparams.maxdel;  % Set maximum delta value.
-eta = nparams.eta;  % Set eta.
+%  Populate local caching of dlparams parameters.
+toler = dlparams.toler;  % Set gradient tolerance.
+maxit = dlparams.maxit;  % Set maximum number of allowed iterations.
+initdel = dlparams.initdel;  % Set initial delta value.
+maxdel = dlparams.maxdel;  % Set maximum delta value.
+eta = dlparams.eta;  % Set eta.
 
 del = initdel;  % Set delta value to initial delta value.
 xc.p = x.p;  % Set the current point to the initial point, x.p.
@@ -77,10 +77,10 @@ for i = 1:maxit
     % Get the Cholesky factorization of the Hessian at the current point.
     [R,flag] = chol(xc.h);
     numFact = numFact + 1;  % Increment the 'chol' call counter.
-    %  If the Cholesky factorization failed and nparams.fail = 'cauchy',
+    %  If the Cholesky factorization failed and dlparams.fail = 'cauchy',
     %  then the dogleg point is the Cauchy point, pU.
     if flag ~= 0
-        if isfield(nparams, 'fail') && strcmp(nparams.fail, 'cauchy')
+        if isfield(dlparams, 'fail') && strcmp(dlparams.fail, 'cauchy')
             p = pU;  % Set dogleg point to Cauchy point.
         else
             %  Otherwise, repeatedly try 'multiple of the identity' Hessian
@@ -132,26 +132,24 @@ for i = 1:maxit
     rho = (xc.f - feval(fun,xc.p + p,1)) / (-xc.g'*p - 0.5*p'*xc.h*p);
     
     %  Update the trust region; i.e., update del and the current point.
-
     if rho < 0.25
-        del = del/4;
+        del = del / 4;
     else
-        %  Note that radius only increases if ||p|| reaches the TR boundary.
+        %  Note that radius only increases if norm of p reaches the trust
+        %  region boundary.
         if rho > 0.75 && norm(p) == del
             del = min(2*del, maxdel);
         end
-        % else del_{k+1} = del_k; i.e., del does not change.
     end
     if rho > eta
         xc.p = xc.p + p;
     end
-    % else p_{k+1} = p_k; i.e., the current point does not change.
 end
 %  If reached, method failed.
 inform.status = 0;  % Update status to failure indicator, 0.
 inform.iter = maxit;  % Number of iterations = i = maxit at this point.
 x.p = xc.p;
-x.f = xc.f;
+x.f = feval(fun, x.p, 1);
 x.g = feval(fun, x.p, 2);
 x.h = sparse(feval(fun,x.p,4));
 return;  % Return inform and final point x
