@@ -3,7 +3,7 @@ MATLAB implementations of a variety of nonlinear programming algorithms.
 
 ---
 
-This repository contains MATLAB implementations of a variety of popular nonlinear programming algorithms, many of which can be found in *Numerical Optimization" by Nocedal and Wright, a text that I highly recommend.
+This repository contains MATLAB implementations of a variety of popular nonlinear programming algorithms, many of which can be found in *Numerical Optimization* by Nocedal and Wright, a text that I highly recommend.
 
 List of algorithms implemented:
 
