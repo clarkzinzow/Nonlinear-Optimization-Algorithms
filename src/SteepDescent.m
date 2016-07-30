@@ -66,7 +66,7 @@ while iter < maxit && norm(x.g) >= toler
     
     %  Get step size satisfying simple Wolfe conditions.
     [alfa, x] = StepSize(fun, x, d, alfa, params);
-    alfa = max(10*xtol, pg'*d*alfa/(x.g'*(-x.g)));  % Calculate new alpha.
+    alfa = max(10*xtol, pg'*d*alfa / (x.g'*(-x.g)));  % Calculate new alpha.
     iter = iter + 1;  % Increment step counter.
 end
 inform.iter = iter;  % Number of iterations = iter at this point.

@@ -20,7 +20,6 @@ function [inform, x] = BFGS(func, x, bfgsparams)
 %                        achieved;
 %                        0 if not.
 %      * inform.iter   - the number of steps taken
-%      * inform.cgiter - the number of conjugate iterations
 %    x      - the solution structure, with the solution point along with the
 %             function evaluation thereof.
 
@@ -39,13 +38,13 @@ xc.p = x.p;  % Set the current point to the initial point, x.p.
 params = struct('ftol', 1e-4, 'gtol', 0.9, 'xtol', 1e-6, 'stpmin', 0, ...
                 'stpmax', 1e20, 'maxfev', 10000);
 
-I = eye(size(xc.p, 1));
+I = eye(size(xc.p, 1));  % Locally stored identity matrix.
 for i = 1:maxit
     %  Compute function and gradient at current point.
     xc.f = feval(func, xc.p, 1);
     xc.g = feval(func, xc.p, 2);
     
-    %  Check check for termination condition: (scaled) norm of gradient less
+    %  Check for termination condition: (scaled) norm of gradient less
     %  than toler.
     if norm(xc.g) / min(1000, 1 + abs(xc.f)) < toler
         inform.status = 1;  % Indicates success.
@@ -73,7 +72,7 @@ for i = 1:maxit
     %         producing superlinear convergence of the overall algorithm.
     %         See page 142 of Nocedal and Wright.
     [alfa, x] = StepSize(func, xc, p, 1, params);
-    %  Update current point in p-direction.
+    %  Update current point in p-direction with step size alpha.
     xc.p = xc.p + alfa * p;
 
     %  Update parameters.

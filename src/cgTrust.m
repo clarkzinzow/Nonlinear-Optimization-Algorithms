@@ -51,7 +51,7 @@ for i = 1:maxit
     xc.g = feval(fun, xc.p, 2);
     xc.h = sparse(feval(fun, xc.p, 4));
     
-    %  Check check for termination condition: norm of gradient less than toler.
+    %  Check for termination condition: norm of gradient less than toler.
     if norm(xc.g) < toler
         inform.status = 1;  % Indicates success.
         inform.iter = i;  % Number of iterations.

@@ -65,10 +65,10 @@ for i = 1:maxit
     
     % Use the direct method.
     if strcmp(method, 'direct')
-        s = -xc.h \ xc.g;  % Search direction.
+        p = -xc.h \ xc.g;  % Search direction.
         
         % If this is not a descent direction...
-        if xc.g' * s >= 0
+        if xc.g' * p >= 0
             D = zeros(size(xc.h));  % Modified Hessian matrix.
             for j = 1 : size(xc.p, 1)
                 D(j,j) = 1.0 / max(0.01, abs(xc.h(j,j)));
@@ -76,18 +76,18 @@ for i = 1:maxit
             %  D is now a positive diagonal matrix with a diagonal scaled
             %  by the inverse of the corresponding diagonal element of the
             %  Hessian (or by 100 if 1/abs(xc.h(j,j)) > 100.)
-            s = -D*xc.g;  % New search direction that is a descent direction.
+            p = -D*xc.g;  % New search direction that is a descent direction.
         end
     else
         % Hessian modification method: Cholesky with added multiple of identity.
         [R, ~] = CholeskyMultIdentity(xc.h);
-        s = -R \ (R'\xc.g);  % Search direction.
+        p = -R \ (R'\xc.g);  % Search direction.
     end
     
     %  Get step size that satisfies simple Wolfe conditions.
-    [alfa, x] = StepSize(func, xc, s, 1, params);
-    %  Update current point in s-direction.
-    xc.p = xc.p + alfa * s;
+    [alfa, x] = StepSize(func, xc, p, 1, params);
+    %  Update current point in p-direction with step size alpha.
+    xc.p = xc.p + alfa * p;
 end
 %  If reached, method failed.
 inform.status = 0;  % Update status to failure indicator, 0.
