@@ -1,7 +1,7 @@
 function [inform, x] = LBFGS(func, x, lbfgsparams)
 %  Implements the limited-memory Broyden-Fletcher-Goldfarb-Shanno algorithm, a
 %  quasi-Newton method that approximates the Broyden-Fletcher-Goldfarb-Shanno
-%  method using a limited amoung of memory.
+%  method using a limited amount of memory.
 
 %  Input:
 %    func      - a pointer to a function
