@@ -97,5 +97,3 @@ x.f = feval(func, x.p, 1);
 x.g = feval(func, x.p, 2);
 return;  % Return inform and final point.
 end
-
-
