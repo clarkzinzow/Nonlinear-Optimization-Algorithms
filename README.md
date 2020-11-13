@@ -1,5 +1,5 @@
 # Nonlinear-Optimization-Algorithms
-MATLAB implementations of a variety of nonlinear programming algorithms.
+MATLAB implementations of various nonlinear programming algorithms.
 
 ---
 
@@ -16,8 +16,10 @@ List of algorithms implemented:
 7. [limited-memory BFGS](https://en.wikipedia.org/wiki/Limited-memory_BFGS)
 8. [Gauss-Newton method](https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm)
 
-All of the algorithms are heavily commented (possibly to a fault), but I wanted someone in the midst of a nonlinear programming class to be able to read through the code and understand it decently well.  Although I have done my best to implement these algorithms with efficiency in mind (within the confines of MATLAB's inherent deficiencies in this regard), this repository is far more valuable as a teaching tool than a performance-centric library.
+All of the algorithms are heavily commented (possibly to a fault), but I wanted someone in the midst of a nonlinear programming class to be able to read through the code and understand it decently well.  Although I have done my best to implement these algorithms with efficiency in mind (within the confines of MATLAB's inherent deficiencies in this regard), this repository is far more valuable as a teaching tool than as a performance-centric library.
 
 Due to the algorithms being so heavily commented, many implementation details are contained within the code as comments instead of in a README.
 
-In the near future, I will include a demo folder that demonstrates the correctness and performance of each algorithm on a set of representative problems.  I also might create a README with implementation details for each algorithm, to be located in the src folder.
+Some day, I will include a demo folder that demonstrates the correctness and performance of each algorithm on a set of representative problems, and I will create a README with implementation details for each algorithm, to be located in the src folder.
+
+Some day! :)
